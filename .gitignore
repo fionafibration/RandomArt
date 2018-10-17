@@ -107,3 +107,4 @@ venv.bak/
 *.svg
 !out.svg
 !laser_out.svg
+!name.svg
