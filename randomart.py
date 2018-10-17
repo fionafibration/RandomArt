@@ -148,6 +148,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('output', default=None, type=str,
                         help='The output file for the SVG.')
+    parser.add_argument('--laser', '-L', action='store_true',
+                        help='Make stroke width 0.01 for use in an Epilog laser cutter.')
     args = parser.parse_args()
 
     raw_data = sys.stdin.read()
@@ -168,6 +170,6 @@ if __name__ == '__main__':
     paragraph = dwg.add(dwg.g(font_size=font_size, font_family='monospace'))
 
     for i, line in enumerate(art.split('\n')):
-        paragraph.add(dwg.text(line, (0, (i + 1)* font_size), fill='white', stroke='black', style='white-space: pre;'))
+        paragraph.add(dwg.text(line, (0, (i + 1)* font_size), fill='white', stroke='black', stroke_width='1px' if not args.laser else '0.01px', style='white-space: pre;'))
         
     dwg.save()
