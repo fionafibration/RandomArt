@@ -165,7 +165,7 @@ if __name__ == '__main__':
 
     dwg = svgwrite.Drawing(args.output, (font_size * 33 + 10, font_size * 17 + 10))
     
-    dwg.add(dwg.rect(insert=(0, font_size), size=('100%', '100%'), fill='white'))
+    dwg.add(dwg.rect(insert=(0, 0), size=('100%', '100%'), fill='white'))
 
     paragraph = dwg.add(dwg.g(font_size=font_size, font_family='monospace'))
 
