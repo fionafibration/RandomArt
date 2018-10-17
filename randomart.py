@@ -1,5 +1,8 @@
 from collections import Counter
 import hashlib
+import argparse
+import svgwrite
+import sys
 
 """
 Implements a randomart visualizer based on the Drunken Bishop algorithm used by SHH
@@ -120,7 +123,7 @@ class RandomArt:
 
         # Get the top and bottom borders
         room_x, room_y = self.room_size
-        if self.hashalg != '':
+        if self.hashalg != '' and self.hashalg is not None:
             bottom = '+' + ('[' + self.hashalg + ']').center(room_x, '-') + '+'
         else:
             bottom = '+' + '-' * room_x + '+'
@@ -142,12 +145,29 @@ class RandomArt:
     
 
 if __name__ == '__main__':
-    while True:
-        # Just display the randomart of user input using SHA3-512 and a 31x15 grid
-        string = input('')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('output', default=None, type=str,
+                        help='The output file for the SVG.')
+    args = parser.parse_args()
 
-        hex_digest = hashlib.sha3_512(string.encode('utf-8')).hexdigest()
+    raw_data = sys.stdin.read()
+    digest = hashlib.sha3_512(raw_data.encode('utf-8')).hexdigest()
 
-        r = RandomArt('SHA3-512', (31, 15))
+    r = RandomArt(None, (31, 15))
 
-        print(r(hex_digest))
+    art = r(digest)
+
+    # SVG Rendering
+    # Be prepared for broken rendering if this size is changed.
+    font_size = 40
+
+    dwg = svgwrite.Drawing(args.output, (font_size * 33 + 10, font_size * 17 + 10))
+    
+    dwg.add(dwg.rect(insert=(0, font_size), size=('100%', '100%'), fill='white'))
+
+    paragraph = dwg.add(dwg.g(font_size=font_size, font_family='monospace'))
+
+    for i, line in enumerate(art.split('\n')):
+        paragraph.add(dwg.text(line, (0, (i + 1)* font_size), fill='white', stroke='black', style='white-space: pre;'))
+        
+    dwg.save()
